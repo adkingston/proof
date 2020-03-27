@@ -1,0 +1,23 @@
+http:
+    middlewares:
+        redirect:
+            redirectScheme:
+                scheme: https
+
+tls:
+    stores:
+        default:
+            defaultCertificate:
+                certFile: /certs/casker.crt
+                keyFile: /certs/casker.key
+    certificates:
+        - certFile: /certs/casker.crt
+          keyFile: /certs/casker.key
+
+providers:
+    file:
+        filename: /config.yml
+        watch: true
+    docker:
+        exposedByDefault: false
+        network: casker_backend
