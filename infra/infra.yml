@@ -41,35 +41,12 @@ services:
             - "traefik.enable=true"
             - "traefik.http.routers.api.rule=Host(`monitor.localhost`)"
             - "traefik.http.routers.api.service=api@internal"
-    dev:
-        image: codercom/code-server
-        networks:
-            - backend
-        volumes:
-            - ~/projects:/home/projects
-            - /var/run/docker.sock:/var/run/docker.sock
-        labels:
-            - "traefik.enable=true"
-            
-            - "traefik.http.services.dev.loadbalancer.server.port=8080"
-            - "traefik.http.routers.dev.service=dev"
-            - "traefik.http.routers.dev.rule=Host(`dev.localhost`)"
-            - "traefik.http.routers.dev.entrypoints=web"
-            - "traefik.http.routers.dev.middlewares=redirect@file"
-
-            - "traefik.http.routers.dev-secured.service=dev"
-            - "traefik.http.routers.dev-secured.rule=Host(`dev.localhost`)"
-            - "traefik.http.routers.dev-secured.entrypoints=web-secured"
-            - "traefik.http.routers.dev-secured.tls=true"
-        command: "--auth none"
-        
     neo4j:
         image: neo4j:latest
         networks:
             - backend
         ports:
             - "7474:7474"
-            - "7473:7474"
             - "7687:7687"
         labels:
             - "traefik.enable=true"

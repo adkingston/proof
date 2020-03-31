@@ -8,11 +8,11 @@ tls:
     stores:
         default:
             defaultCertificate:
-                certFile: /certs/casker.crt
-                keyFile: /certs/casker.key
+                certFile: /certs/localhost.pem
+                keyFile: /certs/localhost-key.pem
     certificates:
-        - certFile: /certs/casker.crt
-          keyFile: /certs/casker.key
+        - certFile: /certs/localhost.pem
+          keyFile: /certs/localhost-key.pem
 
 providers:
     file:
