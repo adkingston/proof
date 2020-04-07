@@ -1,0 +1,6 @@
+# all dotfiles
+.*
+!.gitignore
+
+# all certs
+*certs

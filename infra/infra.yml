@@ -39,27 +39,32 @@ services:
             - ./certs:/certs
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.api.rule=Host(`monitor.localhost`)"
+            - "traefik.http.routers.api.rule=Host(`monitor.casker.localhost`)"
             - "traefik.http.routers.api.service=api@internal"
+            - "traefik.http.routers.api.middlewares=redirect@file"
+
+            - "traefik.http.routers.api-secured.service=api@internal"
+            - "traefik.http.routers.api-secured.rule=Host(`monitor.casker.localhost`)"
+            - "traefik.http.routers.api-secured.entrypoints=web-secured"
+            - "traefik.http.routers.api-secured.tls=true"
     neo4j:
-        image: neo4j:latest
+        image: neo4j:4.0
         networks:
             - backend
         ports:
-            - "7474:7474"
             - "7687:7687"
         labels:
             - "traefik.enable=true"
             
             - "traefik.http.services.neo4j.loadbalancer.server.port=7474"
-            
+
             - "traefik.http.routers.neo4j.service=neo4j"
-            - "traefik.http.routers.neo4j.rule=Host(`neo4j.localhost`)"
+            - "traefik.http.routers.neo4j.rule=Host(`neo4j.casker.localhost`)"
             - "traefik.http.routers.neo4j.entrypoints=web"
             - "traefik.http.routers.neo4j.middlewares=redirect@file"
 
             - "traefik.http.routers.neo4j-secured.service=neo4j"
-            - "traefik.http.routers.neo4j-secured.rule=Host(`neo4j.localhost`)"
+            - "traefik.http.routers.neo4j-secured.rule=Host(`neo4j.casker.localhost`)"
             - "traefik.http.routers.neo4j-secured.entrypoints=web-secured"
             - "traefik.http.routers.neo4j-secured.tls=true"
             
@@ -67,12 +72,12 @@ services:
             - "traefik.http.services.neo4jdb.loadbalancer.server.port=7687"
 
             - "traefik.http.routers.neo4jdb.service=neo4jdb"
-            - "traefik.http.routers.neo4jdb.rule=Host(`neo4jdb.localhost`)"
+            - "traefik.http.routers.neo4jdb.rule=Host(`neo4jdb.casker.localhost`)"
             - "traefik.http.routers.neo4jdb.entrypoints=web"
             - "traefik.http.routers.neo4jdb.middlewares=redirect@file"
             
             - "traefik.http.routers.neo4jdb-secured.service=neo4jdb"
-            - "traefik.http.routers.neo4jdb-secured.rule=Host(`neo4jdb.localhost`)"
+            - "traefik.http.routers.neo4jdb-secured.rule=Host(`neo4jdb.casker.localhost`)"
             - "traefik.http.routers.neo4jdb-secured.entrypoints=web-secured"
             - "traefik.http.routers.neo4jdb-secured.tls=true"
 
@@ -80,9 +85,22 @@ services:
             - "traefik.tcp.services.neo4jdb.loadbalancer.server.port=7687"
 
             - "traefik.tcp.routers.neo4jdb.service=neo4jdb"
-            - "traefik.tcp.routers.neo4jdb.rule=HostSNI(`neo4jdb.localhost`)"
+            - "traefik.tcp.routers.neo4jdb.rule=HostSNI(`neo4jdb.casker.localhost`)"
             - "traefik.tcp.routers.neo4jdb.tls=true"
         volumes:
             - neo4j-storage:/data
+            - ./neo4j_certs:/var/lib/neo4j/certificates
+            - ./neo4j_certs:/ssl
         environment:
             - NEO4J_AUTH=neo4j/admin
+
+            - NEO4J_dbms_connector_bolt_listen__address=neo4j:7687
+            - NEO4J_dbms_connector_bolt_advertised__address=neo4jdb.casker.localhost
+
+            - NEO4J_dbms_connector_bolt_tls__level=REQUIRED
+
+            - NEO4J_dbms_ssl_policy_bolt_enabled=true
+            - NEO4J_dbms_ssl_policy_bolt_base__directory=/ssl
+            - NEO4J_dbms_ssl_policy_bolt_private__key=neo4j.key
+            - NEO4J_dbms_ssl_policy_bolt_public__certificate=neo4j.crt
+            - NEO4J_dbms_ssl_policy_bolt_client__auth=NONE
