@@ -8,6 +8,12 @@ networks:
 volumes:
     neo4j-storage:
         name: local-neo4j-data
+    postgres-storage:
+        name: local-postgres-data
+    elastisearch-storage:
+        name: local-es-data
+    fa-configs:
+        name: local-fa-data
 
 services:
     reverse-proxy:
@@ -96,7 +102,7 @@ services:
             - NEO4J_dbms_connector_bolt_listen__address=neo4j:7687
             - NEO4J_dbms_connector_bolt_advertised__address=neo4jdb.proof.localhost
 
-            - NEO4J_dbms_connector_bolt_tls__level=REQUIRED
+            - NEO4J_dbms_connector_bolt_tls__level=OPTIONAL
 
             - NEO4J_dbms_ssl_policy_bolt_enabled=true
             - NEO4J_dbms_ssl_policy_bolt_base__directory=/ssl
